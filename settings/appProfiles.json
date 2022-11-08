@@ -1,37 +1,25 @@
 {
-  "appProfiles": [
+  "profiles": [
     {
-      "profile_name": "Default Profile",
       "ahkHandle": "Default",
-      "enable": 1,
-      "pieMenus": [
+      "label": "Default Profile",
+      "piemenus": [
         {
-          "menu_name": "Default",
-          "enable": 1,
+          "label": "Default",
           "hotkey": "F13",
           "general": 1,
-          "theme": "",
-          "in_out_radius": "15_115",
-          "hold": 0,
-          "holdOpenOverride": 0,
-          "labelDelay": 5,
-          "restoreOriginalPosition": "useGlobal",
-          "numSlices": 7,
-          "offset_angle": 0,
-          "offset_slices": 0,
-          "triggerKeysActive": true,
+          "enabled": 1,
+          "returnmousepos": 0,
           "slices": [
             {
-              "SliceNumber": "1",
+              "label": "Brave",
               "function": "runProgram",
-              "params": {
-                "filePath": "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe"
-              },
-              "hasSubMenu": 1,
-              "subSlices": [
+              "enabled": 1,
+              "subslices": [
                 {
                   "label": "Youtube",
                   "function": "runProgram",
+                  "enabled": 1,
                   "params": {
                     "filePath": "\"C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe\" youtube.com"
                   }
@@ -39,6 +27,7 @@
                 {
                   "label": "Twitch",
                   "function": "runProgram",
+                  "enabled": 1,
                   "params": {
                     "filePath": "\"C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe\" twitch.tv/lekkerspelen/videos?filter=highlights&sort=time"
                   }
@@ -46,6 +35,7 @@
                 {
                   "label": "GitHub",
                   "function": "runProgram",
+                  "enabled": 1,
                   "params": {
                     "filePath": "\"C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe\" github.com"
                   }
@@ -53,434 +43,311 @@
                 {
                   "label": "ProtonMail",
                   "function": "runProgram",
+                  "enabled": 1,
                   "params": {
                     "filePath": "\"C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe\" account.proton.me/login?language=en"
                   }
                 }
               ],
-              "label": "Brave",
-              "returnMousePos": 1,
-              "icon": "arrow-bar-right.svg",
-              "triggerKey": "None"
+              "params": {
+                "filePath": "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe"
+              }
             },
             {
-              "SliceNumber": "2",
+              "label": "Steam",
               "function": "runProgram",
+              "icon": "clock.svg",
+              "enabled": 1,
               "params": {
                 "filePath": "C:/Program Files (x86)/Steam/steam.exe"
-              },
-              "hasSubMenu": 1,
-              "subSlices": [
-                {
-                  "menuScript": 1,
-                  "menuScriptId": "Library",
-                  "scriptLocation": "D:/Pycharm/Pie-Menus/settings/Menu scripts/menuSteam.py"
-                }
-              ],
-              "label": "Steam",
-              "returnMousePos": 0,
-              "icon": "clock.svg",
-              "triggerKey": "None"
+              }
             },
             {
-              "SliceNumber": "3",
+              "label": "Pycharm",
               "function": "runProgram",
+              "icon": "monitor.svg",
+              "enabled": 1,
               "params": {
                 "filePath": "C:/Users/Robert/AppData/Local/JetBrains/Toolbox/apps/PyCharm-P/ch-0/212.5457.59/bin/pycharm64.exe"
-              },
-              "label": "Pycharm",
-              "returnMousePos": 0,
-              "icon": "monitor.svg",
-              "triggerKey": "None"
+              }
             },
             {
-              "SliceNumber": "4",
+              "label": "WhatsApp",
               "function": "runProgram",
+              "icon": "notification.svg",
+              "enabled": 1,
               "params": {
                 "filePath": "C:/Users/Robert/AppData/Local/WhatsApp/WhatsApp.exe"
-              },
-              "label": "WhatsApp",
-              "returnMousePos": 0,
-              "icon": "notification.svg",
-              "triggerKey": "None"
+              }
             },
             {
-              "SliceNumber": "5",
+              "label": "Blender",
               "function": "runProgram",
+              "icon": "arrow-bar-left.svg",
+              "enabled": 1,
               "params": {
                 "filePath": "C:/Program Files/Blender Foundation/Blender 3.2/blender-launcher.exe"
-              },
-              "label": "Blender",
-              "returnMousePos": 0,
-              "icon": "arrow-bar-left.svg",
-              "triggerKey": "None"
+              }
             },
             {
-              "SliceNumber": "6",
+              "label": "Command Prompt",
               "function": "runProgram",
+              "icon": "sidebar-left.svg",
+              "enabled": 1,
               "params": {
                 "filePath": "C:/windows/system32/cmd.exe"
-              },
-              "label": "Command Prompt",
-              "returnMousePos": 0,
-              "icon": "sidebar-left.svg",
-              "triggerKey": "None"
+              }
             },
             {
-              "SliceNumber": "7",
+              "label": "Paint.net",
               "function": "runProgram",
+              "icon": "refresh.svg",
+              "enabled": 1,
               "params": {
                 "filePath": "C:/Program Files/paint.net/paintdotnet.exe"
-              },
-              "label": "Paint.net",
-              "returnMousePos": 0,
-              "icon": "refresh.svg",
-              "triggerKey": "5"
+              }
             }
           ]
         }
       ],
       "hotkeys": [
         {
+          "label": "New Hotkey",
           "hotkey": "F19",
-          "enable": 1,
           "general": 1,
-          "function": "GetWindowName"
+          "function": "createProfile",
+          "enabled": 1
         }
       ]
     },
     {
-      "profile_name": "Pycharm",
       "ahkHandle": "SunAwtFrame",
-      "enable": 1,
-      "pieMenus": [
-        {
-          "menu_name": "testing menu for notepad",
-          "enable": true,
-          "hotkey": "F14",
-          "theme": "",
-          "in_out_radius": "22_100",
-          "hold": 0,
-          "holdOpenOverride": 0,
-          "labelDelay": 5,
-          "restoreOriginalPosition": "useGlobal",
-          "numSlices": 4,
-          "offset_angle": 0,
-          "triggerKeysActive": true,
-          "slices": [
-            {
-              "SliceNumber": 1,
-              "function": "sendKeys",
-              "params": [
-                "Hope you liked Pie Menus"
-              ],
-              "w_up": [
-                "sendKeys",
-                [
-                  "wup"
-                ]
-              ],
-              "w_down": [
-                "sendKeys",
-                [
-                  "wdown"
-                ]
-              ],
-              "onPie_w_up": [
-                "sendKeys",
-                [
-                  "onbtn wup"
-                ]
-              ],
-              "onPie_w_down": [
-                "sendKeys",
-                [
-                  "onbtn wdown"
-                ]
-              ],
-              "label": "type some text",
-              "returnMousePos": 0,
-              "icon": "figurethisoutlater.svg",
-              "triggerKey": "1"
-            },
-            {
-              "SliceNumber": "2",
-              "function": "sendKeys",
-              "params": [
-                "sample text"
-              ],
-              "label": "sample text",
-              "returnMousePos": 0,
-              "icon": "figurethisoutlater.svg",
-              "triggerKey": "2"
-            },
-            {
-              "SliceNumber": "3",
-              "function": "sendHotkey",
-              "params": [
-                "ctrl+s"
-              ],
-              "label": "Save",
-              "returnMousePos": 0,
-              "icon": "figurethisoutlater.svg",
-              "triggerKey": "r"
-            },
-            {
-              "SliceNumber": "4",
-              "function": "sendKeys",
-              "params": [
-                "sample text"
-              ],
-              "label": "sample text",
-              "returnMousePos": 0,
-              "icon": "figurethisoutlater.svg",
-              "triggerKey": "None"
-            },
-            {
-              "SliceNumber": "5",
-              "function": "sendKeys",
-              "params": [
-                "e"
-              ],
-              "label": "type E",
-              "returnMousePos": 0,
-              "icon": "figurethisoutlater.svg",
-              "triggerKey": "None"
-            },
-            {
-              "SliceNumber": "6",
-              "function": "sendKeys",
-              "params": [
-                "f"
-              ],
-              "label": "type F",
-              "returnMousePos": 0,
-              "icon": "figurethisoutlater.svg",
-              "triggerKey": "None"
-            },
-            {
-              "SliceNumber": "7",
-              "function": "sendKeys",
-              "params": [
-                "z"
-              ],
-              "label": "type z",
-              "returnMousePos": 0,
-              "icon": "figurethisoutlater.svg",
-              "triggerKey": "None"
-            },
-            {
-              "SliceNumber": "8",
-              "function": "sendKeys",
-              "params": [
-                "your.email@gmail.com"
-              ],
-              "label": "type email",
-              "returnMousePos": 0,
-              "icon": "figurethisoutlater.svg",
-              "triggerKey": "None"
-            }
-          ]
-        }
-      ],
+      "label": "Pycharm",
       "hotkeys": [
         {
+          "label": "New Hotkey",
           "hotkey": "F15",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "F15"
-            ]
+            "args": "['F15']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "F16",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "F16"
-            ]
+            "args": "['F16']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "F20",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "F21"
-            ]
+            "args": "['F21']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "F22",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "F22"
-            ]
+            "args": "['F22']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "F23",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "F23"
-            ]
+            "args": "['F23']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "F24",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "F24"
-            ]
+            "args": "['F24']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "Alt+F13",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "Alt+F13"
-            ]
+            "args": "['Alt+F13']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "Alt+F14",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "Alt+F14"
-            ]
+            "args": "['Alt+F14']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "Alt+F15",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "Alt+F15"
-            ]
+            "args": "['Alt+F15']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "Alt+F16",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "Alt+F16"
-            ]
+            "args": "['Alt+F16']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "Alt+F17",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "Alt+F17"
-            ]
+            "args": "['Alt+F17']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "Alt+F18",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "Alt+F18"
-            ]
+            "args": "['Alt+F18']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "Alt+F19",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "Alt+F19"
-            ]
+            "args": "['Alt+F19']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "Alt+F20",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "Alt+F20"
-            ]
+            "args": "['Alt+F20']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "Alt+F21",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "Alt+F21"
-            ]
+            "args": "['Alt+F21']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "Alt+F22",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "Alt+F22"
-            ]
+            "args": "['Alt+F22']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "Alt+F23",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "Alt+F23"
-            ]
+            "args": "['Alt+F23']"
           }
         },
         {
+          "label": "New Hotkey",
           "hotkey": "Alt+F24",
-          "enable": 1,
           "function": "runScript",
+          "enabled": 1,
+          "general": 0,
           "params": {
             "filePath": "D:/Pycharm/Pie-Menus/settings/Hotkey scripts/HotkeysPycharm.py",
-            "args": [
-              "Alt+F24"
-            ]
+            "args": "['Alt+F24']"
           }
+        }
+      ],
+      "piemenus": [
+        {
+          "label": "Static Code Analysis",
+          "hotkey": "F14",
+          "enabled": 1,
+          "general": 0,
+          "returnmousepos": 0,
+          "slices": [
+            {
+              "label": "SCA Report: File",
+              "function": "sendHotkey",
+              "enabled": 1,
+              "params": [
+                "Ctrl + F13"
+              ]
+            },
+            {
+              "label": "SCA Report: Project",
+              "function": "sendHotkey",
+              "enabled": 1,
+              "params": [
+                "Ctrl + F14"
+              ]
+            }
+          ]
         }
       ]
     }
