@@ -1,7 +1,7 @@
 # Pie Menus Expanded
 
 PME is an expanded version of the original Pie Menu project. PME adds pie menus to Windows (and eventually Linux)
-inspired by the 3D modeling software Blender.
+inspired by the 3D modeling software Blender, with many more features that aren't found in the original 'Pie Menus' project.
 
 ![](resources/pie_screenshots/PM.png)
 
