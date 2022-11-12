@@ -1,7 +1,8 @@
 # Pie Menus Expanded
 
 PME is an expanded version of the original Pie Menu project. PME adds pie menus to Windows (and eventually Linux)
-inspired by the 3D modeling software Blender, with many more features that aren't found in the original 'Pie Menus' project.
+inspired by the 3D modeling software Blender, with many more features that aren't found in the original 'Pie Menus'
+project.
 
 ![](resources/pie_screenshots/PM.png)
 
@@ -25,7 +26,7 @@ There are several more features that haven't been mentioned so far, like:
   the main slice. For instance, if you have a slice dedicated to opening Chrome, the sub slices can be dedicated to
   opening frequently used websites.
 
-  ![](resources/pie_screenshots/PM Subslices.png)
+  ![](resources/pie_screenshots/PM_Subslices.png)
 
 ### How do I use PME?
 
