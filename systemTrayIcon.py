@@ -19,8 +19,12 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.GAR = GAR
         self.suspend_app = GAR(True)['suspend_app']
         self.resume_app = GAR(True)['resume_app']
-        self.settingsMenu = SettingsMenu(settingsManager)
+        self.settingsMenu = SettingsMenu(settingsManager, self)
         self.contextMenu = None
+
+    def openSettingsMenu(self):
+        self.suspend_app()
+        self.settingsMenu.showMenu(self.GAR()['APP'].desktop().screenGeometry())
 
     def make_context(self):
         # menu = QtWidgets.QMenu(parent)
@@ -36,9 +40,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         main_menu.addSeparator()
 
         settings = main_menu.add_action("Settings")
-        settings.triggered.connect(
-            partial(self.settingsMenu.showMenu,
-                    self.GAR()['APP'].desktop().screenGeometry()))
+        settings.triggered.connect(self.openSettingsMenu)
         # ------------ /Main context menu--------------------
 
 
@@ -83,14 +85,15 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         msgBox.setDefaultButton(QMessageBox.Ok)
         msgBox.buttonClicked.connect(self.msgButtonClick)
 
-        returnValue = msgBox.exec()
-        if returnValue == QMessageBox.Ok:
+        if msgBox.exec() == QMessageBox.Ok:
             print('OK clicked')
 
-    def msgButtonClick(self, event):
+    @staticmethod
+    def msgButtonClick(event):
         print("Button clicked is:", event.text())
 
-    def exit(self):
+    @staticmethod
+    def exit():
         QtCore.QCoreApplication.exit()
 
 

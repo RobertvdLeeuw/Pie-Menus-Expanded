@@ -85,9 +85,14 @@ def createProfile():
         sys.exit(-1)
 
 
+def runCommand(params):
+    subprocess.run
+
+
 FUNCTIONS = {"sendKeys": sendKeys,
              "sendHotkey": sendHotkey,
              "runScript": runScript,
              "runProgram": runProgram,
              "getWindowName": getWindowName,
-             "createProfile": createProfile}
+             "createProfile": createProfile,
+             "runCommand": runCommand}

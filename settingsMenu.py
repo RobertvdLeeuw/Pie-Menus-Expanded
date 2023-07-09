@@ -7,7 +7,7 @@ from functools import partial
 import json
 import sys
 
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets, QtCore, QtGui
 
 
 class NodeType(Enum):
@@ -37,28 +37,29 @@ class InputType(Enum):
     CHECKBOX = 2
     PARAMETERSINGLE = 3
     PARAMETERDOUBLE = 4
+    KEYINPUT = 5
 
 
 STANDARDATTRIBUTES = {NodeType.PROFILE: {"theme": InputType.TEXTFIELD,
                                          "enabled": InputType.CHECKBOX},
                       NodeType.PIEMENU: {"theme": InputType.TEXTFIELD,
-                                         "hotkey": InputType.TEXTFIELD,
+                                         "hotkey": InputType.KEYINPUT,
                                          "general": InputType.CHECKBOX,
                                          "enabled": InputType.CHECKBOX,
                                          "offset_angle": InputType.TEXTFIELD,
                                          "offset_slices": InputType.TEXTFIELD,
                                          "returnMousePos": InputType.CHECKBOX},
-                      NodeType.PIESLICE: {"triggerKey": InputType.TEXTFIELD,
+                      NodeType.PIESLICE: {"triggerKey": InputType.KEYINPUT,
                                           "function": InputType.SELECTION,
                                           "enabled": InputType.CHECKBOX,
                                           "sliceNumber": InputType.TEXTFIELD,
                                           "icon": InputType.TEXTFIELD},
-                      NodeType.PIESUBSLICE: {"triggerKey": InputType.TEXTFIELD,
+                      NodeType.PIESUBSLICE: {"triggerKey": InputType.KEYINPUT,
                                              "function": InputType.SELECTION,
                                              "enabled": InputType.CHECKBOX,
                                              "sliceNumber": InputType.TEXTFIELD,
                                              "icon": InputType.TEXTFIELD},
-                      NodeType.HOTKEY: {"hotkey": InputType.TEXTFIELD,
+                      NodeType.HOTKEY: {"hotkey": InputType.KEYINPUT,
                                         "function": InputType.SELECTION,
                                         "general": InputType.CHECKBOX,
                                         "enabled": InputType.CHECKBOX}}
@@ -172,10 +173,11 @@ class SettingsMenu(QtWidgets.QTabWidget):
     """The 'main' widget of the settings menu. This contains each profile widget and the links to the instantiated
     SettingsManager."""
 
-    def __init__(self, settingsManager: SettingsManager):
+    def __init__(self, settingsManager: SettingsManager, systemTrayIcon: QtWidgets.QSystemTrayIcon):
         super().__init__()
 
         self.settingsManager = settingsManager
+        self.systemTrayIcon = systemTrayIcon
 
         self.children: list[ProfileNode] = []
 
@@ -228,6 +230,71 @@ class SettingsMenu(QtWidgets.QTabWidget):
         self.setColors()
         super().show()
 
+    def closeEvent(self, event):
+        self.systemTrayIcon.resume_app()
+
+
+    def keyPressEvent(self, event):
+        print("keyPressEvent")
+        recursiveSendKeyEvents(self, event)
+
+
+class KeyInputField(QtWidgets.QLineEdit):
+    def __init__(self, value: str):
+        super().__init__()
+
+        self.recording = False
+        self.setPlaceholderText('Click to set input')
+        self.setText(value)
+        self.setReadOnly(True)
+
+        self.priorKeys = ""
+
+        self.focusPolicy = QtCore.Qt.ClickFocus
+
+    def focusInEvent(self, event):
+        self.recording = True
+        print("Clicked.")
+
+        self.setPlaceholderText('Recording...')
+        self.setReadOnly(False)
+
+        self.priorKeys = self.text()
+        self.setText('')
+
+        self.clearFocus()  # Clear focus to capture user input
+
+    # TODO: Use HasFocus() to revert to prior state when something else is clicked.
+
+    def keyPressEvent(self, event):
+
+        print("Key pressed.")
+
+        if not self.recording:
+            return
+
+        print("\tClicked")
+
+        self.setText('')
+
+        key = event.key()
+        modifiers = event.modifiers()
+
+        if key == QtCore.Qt.Key_unknown:
+            return
+
+        # TODO: IMPORTANT QKeySequence(key | modifiers)
+        key_sequence = QtGui.QKeySequence(key | modifiers).toString(QtGui.QKeySequence.NativeText)
+
+        self.setText(key_sequence)
+        self.setReadOnly(True)
+
+        if '?' in key_sequence:
+            return  # Quick fix for incomplete key inputs (such as just 'Ctrl + Shift').
+
+        self.priorKeys = key_sequence
+        self.recording = False
+
 
 class InputObject(QtWidgets.QHBoxLayout):
     """A wrapper around every type of input field, with an accounting label to the describe the type of input."""
@@ -237,6 +304,7 @@ class InputObject(QtWidgets.QHBoxLayout):
         self.addSpacing(10)
 
         self.label = kwargs.get("label", "")
+        self.inputType = inputType
 
         if inputType == InputType.PARAMETERDOUBLE:
             self.labelWidget = QtWidgets.QLineEdit(self.label)
@@ -245,7 +313,7 @@ class InputObject(QtWidgets.QHBoxLayout):
             self.labelWidget = QtWidgets.QLabel(self.label.capitalize())
             self.addWidget(self.labelWidget)
 
-        self.value = kwargs.get("value")
+        self.value = kwargs.get("value", "")
 
         self.valueWidget = None
         self.createValueWidget(inputType, kwargs.get("selectionItems"))
@@ -263,6 +331,9 @@ class InputObject(QtWidgets.QHBoxLayout):
 
             text = self.value if self.value else f"Enter {self.label.lower()}"
             self.valueWidget.setText(str(text))
+        elif inputType == InputType.KEYINPUT:
+            self.valueWidget = KeyInputField(self.value)
+
         elif inputType == InputType.SELECTION:
             self.valueWidget = QtWidgets.QComboBox()
             self.valueWidget.addItems(selectionItems)
@@ -343,8 +414,12 @@ class SettingsNode(QtWidgets.QVBoxLayout):  # TODO: Create collapsible layout cl
                                                      label=label,
                                                      value=data,
                                                      selectionItems=FUNCTIONS)
-            elif label in ("hotkey", "theme", "icon", "sliceNumber", "triggerKey", "offset_angles", "offset_slices"):
+            elif label in ("theme", "icon", "sliceNumber", "offset_angles", "offset_slices"):
                 self.attributes[label] = InputObject(InputType.TEXTFIELD,
+                                                     label=label,
+                                                     value=data)
+            elif label in ("hotkey", "triggerKey"):
+                self.attributes[label] = InputObject(InputType.KEYINPUT,
                                                      label=label,
                                                      value=data)
             elif label in ("general", "enabled"):
@@ -651,8 +726,27 @@ def recursiveDeleteLater(obj: QtCore.QObject):
 
     if isinstance(obj, ProfileNode):
         return  # TODO: This fix doesn't remove the profile, if I understand it correctly. Results in useless object
-        #         in memory. Fix this.
+        #         in memory (garbage collection?) . Fix this.
 
     for i in range(obj.count()):
         recursiveDeleteLater(obj.itemAt(i))
     obj.deleteLater()
+
+
+def recursiveSendKeyEvents(obj: QtCore.QObject, event):
+    # print(f'Sending keys to (children of) {type(obj)}.')
+
+    if isinstance(obj, InputObject):
+        if obj.inputType == InputType.KEYINPUT and obj.valueWidget.recording:
+            print('\tSending keys to KeyInputField.')
+            obj.valueWidget.keyPressEvent(event)
+        return
+
+    # children
+    for child in getattr(obj, 'children', []):
+        # print(f'\tSending keys to child: {type(child)}.')
+        recursiveSendKeyEvents(child, event)
+
+    for attribute in getattr(obj, 'attributes', {}).values():
+        # print(f'\tSending keys to attr: {type(attribute)}.')
+        recursiveSendKeyEvents(attribute, event)

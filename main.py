@@ -6,7 +6,7 @@ from settingsMenu import SettingsManager
 from systemTrayIcon import SystemTrayIcon
 
 from collections import defaultdict
-import os
+import os, time, shutil
 from re import match as re_match
 import sys
 from threading import Thread
@@ -22,6 +22,13 @@ import win32gui as w32gui
 os.environ["PBR_VERSION"] = "4.0.2"  # this removes  tendo/pbr error after pyinstaller compiles it.
 from tendo import singleton
 
+
+if len(sys.argv) > 1:
+    try:
+        os.chdir(sys.argv[1])
+        print("Changed working directory.")
+    except OSError as e:
+        print(e)
 
 _ = singleton.SingleInstance()
 
@@ -123,7 +130,7 @@ class ActiveProfile:
 
         self.flushHotkeys()
 
-        for option in ["piemenus", "hotkeys"]:
+        for option in ("piemenus", "hotkeys"):
             if option not in self.profile:
                 continue
 
@@ -227,13 +234,16 @@ class ActiveProfile:
                          p["ahkHandle"] == "Default"][0]
         currentHotkeys = self.registerActiveProfileHotkeys()
 
-        for option in ["piemenus", "hotkeys"]:
-            for item in globalProfile[option]:
+        for option in ("piemenus", "hotkeys"):
+            for item in globalProfile.get(option, []):
                 if not item.get("general", True) or not item.get("enabled", True):
                     continue
 
                 if item["hotkey"] in currentHotkeys:
                     continue
+
+                if option not in self.profile:
+                    self.profile[option] = []
 
                 self.profile[option].append(item)
 
