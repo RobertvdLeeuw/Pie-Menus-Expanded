@@ -233,9 +233,7 @@ class SettingsMenu(QtWidgets.QTabWidget):
     def closeEvent(self, event):
         self.systemTrayIcon.resume_app()
 
-
     def keyPressEvent(self, event):
-        print("keyPressEvent")
         recursiveSendKeyEvents(self, event)
 
 
@@ -254,7 +252,6 @@ class KeyInputField(QtWidgets.QLineEdit):
 
     def focusInEvent(self, event):
         self.recording = True
-        print("Clicked.")
 
         self.setPlaceholderText('Recording...')
         self.setReadOnly(False)
@@ -267,13 +264,8 @@ class KeyInputField(QtWidgets.QLineEdit):
     # TODO: Use HasFocus() to revert to prior state when something else is clicked.
 
     def keyPressEvent(self, event):
-
-        print("Key pressed.")
-
         if not self.recording:
             return
-
-        print("\tClicked")
 
         self.setText('')
 
@@ -316,14 +308,14 @@ class InputObject(QtWidgets.QHBoxLayout):
         self.value = kwargs.get("value", "")
 
         self.valueWidget = None
-        self.createValueWidget(inputType, kwargs.get("selectionItems"))
+        self.createValueWidget(inputType, kwargs.get("selectionItems"), kwargs.get("toggleScriptedFunc"))
 
         if inputType in (InputType.PARAMETERSINGLE, InputType.PARAMETERDOUBLE):
             removeButton = QtWidgets.QPushButton("Remove")
             removeButton.clicked.connect(partial(recursiveDeleteLater, self))
             self.addWidget(removeButton)
 
-    def createValueWidget(self, inputType, selectionItems):
+    def createValueWidget(self, inputType: InputType, selectionItems: dict, toggleScriptedFunc):
         """Creates a widget that can be used to input options, corresponding to the right type of input type."""
 
         if inputType in (InputType.TEXTFIELD, InputType.PARAMETERSINGLE, InputType.PARAMETERDOUBLE):
@@ -333,10 +325,11 @@ class InputObject(QtWidgets.QHBoxLayout):
             self.valueWidget.setText(str(text))
         elif inputType == InputType.KEYINPUT:
             self.valueWidget = KeyInputField(self.value)
-
         elif inputType == InputType.SELECTION:
             self.valueWidget = QtWidgets.QComboBox()
             self.valueWidget.addItems(selectionItems)
+
+            self.valueWidget.currentTextChanged.connect(partial(toggleScriptedFunc, self.valueWidget))
 
             if self.value:
                 self.valueWidget.setCurrentText(self.value)
@@ -375,13 +368,13 @@ class SettingsNode(QtWidgets.QVBoxLayout):  # TODO: Create collapsible layout cl
         self.nodeType = nodeType
 
         self.children: list[SettingsNode] = []
-        self.label = QtWidgets.QLineEdit()
+        self.label = QtWidgets.QLineEdit()  # Only used a descriptor for user when it's an SSG.
         self.attributes: dict[str, InputObject] = {}
 
         if nodeType == NodeType.PROFILE:
-            return  # End of shared init
+            return  # End of shared init TODO: Check if this is necessary again.
 
-        QtWidgets.QVBoxLayout.__init__(self)
+        QtWidgets.QVBoxLayout.__init__(self)  # TODO: Replace with super?
 
         if nodeType != NodeType.PIEMENU:
             self.paramsLayout = QtWidgets.QVBoxLayout()
@@ -413,7 +406,9 @@ class SettingsNode(QtWidgets.QVBoxLayout):  # TODO: Create collapsible layout cl
                 self.attributes[label] = InputObject(InputType.SELECTION,
                                                      label=label,
                                                      value=data,
-                                                     selectionItems=FUNCTIONS)
+                                                     selectionItems=FUNCTIONS if self.nodeType != NodeType.HOTKEY
+                                                     else {k: v for k, v in FUNCTIONS.items() if k != 'scriptedMenu'},
+                                                     toggleScriptedFunc=self.toggleScripted)
             elif label in ("theme", "icon", "sliceNumber", "offset_angles", "offset_slices"):
                 self.attributes[label] = InputObject(InputType.TEXTFIELD,
                                                      label=label,
@@ -463,9 +458,17 @@ class SettingsNode(QtWidgets.QVBoxLayout):  # TODO: Create collapsible layout cl
 
             kwargs = {"label": label}
             if label == "function":
-                kwargs["selectionItems"] = FUNCTIONS
+                kwargs["selectionItems"] = FUNCTIONS if self.nodeType != NodeType.HOTKEY else {k: v for k, v in
+                                                                                               FUNCTIONS.items() if
+                                                                                               k != 'scriptedMenu'}
+                kwargs['toggleScriptedFunc'] = self.toggleScripted
             elif label == "enabled":
                 kwargs["value"] = True
+
+            if functionField := self.attributes.get('function'):
+                if functionField.valueWidget.currentText() == 'scriptedMenu':
+                    if label in ('icon', 'triggerKey'):
+                        return
 
             self.attributes[label] = InputObject(attrType, **kwargs)
 
@@ -486,6 +489,47 @@ class SettingsNode(QtWidgets.QVBoxLayout):  # TODO: Create collapsible layout cl
 
         layout = self if self.nodeType != NodeType.PROFILE else self.layout
         layout.insertLayout(0, topOptions)
+
+    def toggleScripted(self, selectionItems: QtWidgets.QComboBox, newlySelected: str):
+        if newlySelected == 'scriptedMenu':
+            result = QtWidgets.QMessageBox.question(selectionItems,  # TODO: Fix popup on settings menu open.
+                                                    "Confirmation",
+                                                    "Are you sure? Previously entered information, such as subslices, "
+                                                    "will be removed.",
+                                                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+
+            if result != QtWidgets.QMessageBox.Yes:
+                return
+
+            if self.childrenLayout is None:  # Already deleted, just to be sure.
+                return
+
+            [recursiveDeleteLater(self.attributes[attr]) for attr in ('triggerKey', 'icon') if attr in self.attributes]
+
+            recursiveDeleteLater(self.childrenLayout)
+            self.childrenLayout = None
+            self.children.clear()
+            return
+
+        if self.childrenLayout is not None:
+            return
+
+        # Insert attributes: icon and triggerkey
+        triggerKey = InputObject(InputType.KEYINPUT, label='triggerKey')
+        self.attributes['triggerKey'] = triggerKey
+        self.insertLayout(1, triggerKey)
+
+        icon = InputObject(InputType.TEXTFIELD, label='icon')
+        self.attributes['icon'] = icon
+        self.insertLayout(3, icon)
+
+        # Insert childrenLayout
+        self.childrenLayout = QtWidgets.QVBoxLayout()
+        for childType in CHILDREN.get(self.nodeType, []):
+            options = self.createChildOptions(childType, self.childrenLayout)
+            self.childrenLayout.insertLayout(0, options)
+
+        self.addLayout(self.childrenLayout)
 
     def createChild(self, nodeType: NodeType, **kwargs):
         """Creates a new node of the given type and appends it to the list of children of this node."""
@@ -565,6 +609,10 @@ class SettingsNode(QtWidgets.QVBoxLayout):  # TODO: Create collapsible layout cl
             self.addLayout(self.paramsLayout)
 
         # Add children options
+        if functionField := self.attributes.get('function'):
+            if functionField.valueWidget.currentText() == 'scriptedMenu':
+                return
+
         for childType in CHILDREN.get(self.nodeType, []):
             options = self.createChildOptions(childType, self.childrenLayout)
             self.childrenLayout.insertLayout(0, options)

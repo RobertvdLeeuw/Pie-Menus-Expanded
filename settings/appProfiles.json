@@ -47,6 +47,22 @@
                   "params": {
                     "filePath": "\"C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe\" account.proton.me/login?language=en"
                   }
+                },
+                {
+                  "label": "Netflix",
+                  "function": "runProgram",
+                  "enabled": 1,
+                  "params": {
+                    "filePath": "\"C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe\" netflix.com"
+                  }
+                },
+                {
+                  "label": "ChatGPT",
+                  "function": "sendKeys",
+                  "enabled": 1,
+                  "params": {
+                    "filePath": "\"C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe\" https://chat.openai.com/"
+                  }
                 }
               ],
               "params": {
@@ -72,12 +88,12 @@
               }
             },
             {
-              "label": "WhatsApp",
+              "label": "WhatsApp (Unresponsive)",
               "function": "runProgram",
               "icon": "notification.svg",
               "enabled": 1,
               "params": {
-                "filePath": "C:/Users/Robert/AppData/Local/WhatsApp/WhatsApp.exe"
+                "filePath": "C:\\Program Files\\WindowsApps\\5319275A.WhatsAppDesktop_2.2324.6.0_x64__cv1g1gvanyjgm\\WhatsApp.exe"
               }
             },
             {
@@ -95,7 +111,7 @@
               "icon": "sidebar-left.svg",
               "enabled": 1,
               "params": {
-                "filePath": "C:/windows/system32/cmd.exe"
+                "filePath": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsTerminal_1.17.11461.0_x64__8wekyb3d8bbwe\\wt.exe"
               }
             },
             {
@@ -105,6 +121,31 @@
               "enabled": 1,
               "params": {
                 "filePath": "C:/Program Files/paint.net/paintdotnet.exe"
+              }
+            },
+            {
+              "label": "Obsidian",
+              "function": "runProgram",
+              "enabled": 1,
+              "params": {
+                "filePath": "C:\\Users\\Robert\\AppData\\Local\\Obsidian\\Obsidian.exe"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Test",
+          "hotkey": "F15",
+          "enabled": 1,
+          "general": 0,
+          "returnmousepos": 0,
+          "slices": [
+            {
+              "label": "SSG: Steam",
+              "function": "scriptedMenu",
+              "enabled": 1,
+              "params": {
+                "filePath": "D:\\Pycharm\\Pie-Menus-Expanded\\settings\\menuScripts\\menuSteam.py"
               }
             }
           ]
@@ -346,6 +387,64 @@
               "params": [
                 "Ctrl + F14"
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ahkHandle": "Chrome_WidgetWin_1",
+      "label": "Obsidian",
+      "piemenus": [
+        {
+          "label": "Default",
+          "enabled": 1,
+          "hotkey": "F14",
+          "general": 0,
+          "returnmousepos": 0,
+          "slices": [
+            {
+              "label": "New Slice",
+              "function": "sendKeys",
+              "enabled": 1
+            },
+            {
+              "label": "New Slice",
+              "function": "sendKeys",
+              "enabled": 1
+            },
+            {
+              "label": "New Slice",
+              "function": "sendKeys",
+              "enabled": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ahkHandle": "SDL_app",
+      "label": "Steam",
+      "piemenus": [
+        {
+          "label": "New Pie Menu",
+          "hotkey": "F14",
+          "enabled": 1,
+          "general": 0,
+          "returnmousepos": 0,
+          "slices": [
+            {
+              "label": "New Slice",
+              "function": "scriptedMenu",
+              "enabled": 1,
+              "params": {
+                "filePath": "D:\\Pycharm\\Pie-Menus-Expanded\\settings\\Menu scripts\\menuSteam.py"
+              }
+            },
+            {
+              "label": "New Slice",
+              "function": "sendKeys",
+              "enabled": 1
             }
           ]
         }

@@ -1,7 +1,7 @@
 import pieFunctions
+from settings.menuScripts.menuScript import MenuOption
 from settings.pie_themes import pie_themes, pie_selection_theme
 
-import json
 import os
 from queue import Queue
 from time import sleep
@@ -151,7 +151,14 @@ class RadialMenu(QtWidgets.QWidget):
             slices = slices[-1 * openPieMenu.get("offset_slices", 0):] + slices[: -1 * openPieMenu.get("offset_slices")]
 
         for slice in slices:
-            self.addButton(slice)
+            self.generateSSGButtons(slice) if slice.get("function") == 'scriptedMenu' else self.addButton(slice)
+
+    def generateSSGButtons(self, ssgData: dict):
+        menuOptions = pieFunctions.scriptedMenu(ssgData['params'])
+
+        for menuOption in menuOptions:  # TODO: Pop-up if empty.
+            print(f'\tMO: {menuOption.toDict()}')
+            self.addButton(menuOption.toDict())
 
     def addButton(self, slice: dict):
         """Creates the buttons, one for each slice of the pieMenu, and their potential children."""
@@ -629,7 +636,9 @@ class Button(QtWidgets.QPushButton):
 
     def updateSubMenuButtons(self, parentAngle: float):
         for index, btn in enumerate(self.btnList):
-            offsetAngle = ((180 / (len(self.subMenu) + 1)) * (index + 1)) + 90  # -90 <--> 90
+            maxAngle = 180  # TODO: Fix this (try other values).
+
+            offsetAngle = ((maxAngle / (len(self.subMenu) + 1)) * (index + 1)) + (maxAngle / 2)
 
             btnAngle = (offsetAngle + parentAngle) % 360
 

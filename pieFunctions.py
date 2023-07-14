@@ -5,16 +5,18 @@ import win32gui as w32gui
 
 import keyboard
 
+from settings.menuScripts.menuScript import MenuOption
+
 
 # as of now, receiving all params as one list in one var
 # receive them directly as parameters
 
-def sendKeys(params):
+def sendKeys(params: list):
     params = params[0]
     keyboard.write(params)
 
 
-def sendHotkey(params):
+def sendHotkey(params: list):
     hotkey = params[0]
 
     repeat_count = 1 if len(params) == 1 else params[1]
@@ -23,7 +25,7 @@ def sendHotkey(params):
         keyboard.send(hotkey)
 
 
-def runScript(params):  # TODO: Test for all code types.
+def runScript(params: dict):  # TODO: Test for all code types.
     filePath: str = params["filePath"]
 
     for scriptType in ('.py', '.ahk'):
@@ -35,7 +37,7 @@ def runScript(params):  # TODO: Test for all code types.
     print(f"Invalid script type: {filePath}")
 
 
-def runProgram(params):
+def runProgram(params: dict):
     filePath: str = params["filePath"]
 
     if ".exe" not in filePath:
@@ -85,8 +87,42 @@ def createProfile():
         sys.exit(-1)
 
 
-def runCommand(params):
-    subprocess.run
+def runCommand(params: list):
+    params.insert(0, 'start')
+    print(' '.join(params))
+
+    subprocess.run(params, shell=True)
+
+
+def scriptedMenu(params: dict) -> list[MenuOption]:
+    """
+    Upon opening piemenu, runs the script and populates the menu with the given results.
+    """
+
+    filePath: str = params["filePath"]
+
+    if not filePath.endswith('.py'):
+        print(f"Invalid script type: {filePath}")
+        return []
+
+    parentFolder = '\\'.join(filePath.split('\\')[0:-1])
+    sys.path.append(parentFolder)
+
+    moduleName = filePath.replace('.py', '\\').split('\\')[-2]
+
+    try:
+        command = "import importlib"
+        command += f"\nimport {moduleName}"
+        command += f"\nimportlib.reload({moduleName})"
+        command += f"\nmenuOptions = {moduleName}.menuOptions"
+
+        exec(command, globals())
+
+        return menuOptions
+    except Exception as e:
+        print(f'Failed to run {moduleName}:', e)
+
+    return []
 
 
 FUNCTIONS = {"sendKeys": sendKeys,
@@ -95,4 +131,5 @@ FUNCTIONS = {"sendKeys": sendKeys,
              "runProgram": runProgram,
              "getWindowName": getWindowName,
              "createProfile": createProfile,
-             "runCommand": runCommand}
+             "runCommand": runCommand,
+             "scriptedMenu": scriptedMenu}
