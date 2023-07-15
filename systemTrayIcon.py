@@ -1,10 +1,10 @@
-from PySide2.QtWidgets import QMenu, QMessageBox
-from PySide2 import QtWidgets, QtCore
-from PySide2.QtGui import QCursor
 from ContextMenu import ContextMenu
+import core
 from settings.pie_themes import tray_theme
 from settingsMenu import SettingsMenu
-from functools import partial
+
+from PySide2.QtWidgets import QMessageBox
+from PySide2 import QtWidgets, QtCore
 
 
 # from main import suspend_app, resume_app, APP_SUSPENDED # Just to resolve undefined vars in vscode or any editors.
