@@ -2,13 +2,14 @@ import mousehook
 import pieFunctions
 
 from ctypes import windll
+from functools import partial
 import keyboard
 from re import match as re_match
 import sys
 from threading import Thread
 import win32gui as w32gui
 
-from PySide2 import QtGui, QtWidgets, QtCore
+from PySide2 import QtGui, QtCore
 
 
 DEBUGMODE = False
@@ -25,34 +26,10 @@ def UpdateGlobalVariables(settingsManager):
         WINCHANGE_latency = settingsManager.globalSettings['winChangeLatency']
 
 
-MODES = {'QtCore.QtInfoMsg': 'INFO',
-         'QtCore.QtWarningMsg': 'WARNING',
-         'QtCore.QtCriticalMsg': 'CRITICAL',
-         'QtCore.QtFatalMsg': 'FATAL'}
-
-
-def qtMessageHandler(mode, context, message):
-    """
-    Handles warning messages, sometimes, it might eat up
-    some warning which won't be printed, so it is good to disable this
-    when developing, debugging and testing.
-    """
-
-    if "QWindowsWindow::setGeometry: Unable to set geometry" in message:
-        # This is ignore the warning message when changing the
-        # screen on which app is shown on multi monitor systems.
-        # Qt automatically decides best size, that's I have ignored it here.
-
-        return
-
-    # print(f'qt_message_handler: line: {context.line}, func: {context.function}(), file: {context.file}')
-    print(f"{MODES.get(mode, 'DEBUG')}: {message}")
-
-
 def suspendApp(window, activeProfile, timerWinChange):
     global APP_SUSPENDED
 
-    if window.isMenuOpen():
+    if window.menu:
         # toast msg close open pie menus
         return
 
@@ -109,7 +86,7 @@ class TriggerKeyManager:
 
         self.activeProfile = activeProfile
 
-        activeProfile.timerKeyHeld.timeout.connect(self.isTKeyEvent)
+        activeProfile.timerKeyHeld.timeout.connect(self.launchByTriggerKey)
 
     def loadTriggerKeys(self):
         # enable the following logic if hotkeys and triggerkeys are allowed to be same/clash.
@@ -141,21 +118,17 @@ class TriggerKeyManager:
         self.triggerKey = triggerKey
         self.triggeredPieSlice = pie
 
-    def isTKeyEvent(self):
+    def launchByTriggerKey(self):
         if self.triggerKey is None:
             return
-        self.launchByTriggerKey()
 
-    def unloadTriggerKeys(self):
-        self.loadedTriggerKeys.clear()
-        self.activeProfile.hotkeyManager.loadHotkeys()
-
-    def launchByTriggerKey(self):
         self.activeProfile.window.launchByTrigger(int(self.triggeredPieSlice["SliceNumber"]) - 1)
         self.activeProfile.resetAttributes()
 
     def resetAttributes(self):
-        self.unloadTriggerKeys()
+        self.loadedTriggerKeys.clear()
+        self.activeProfile.hotkeyManager.loadHotkeys()
+
         self.triggerKey = None
         self.sameTKeyHKey = None
 
@@ -177,7 +150,7 @@ class HotkeyManager:
         self.hotkeyForPieMenu = None
 
         self.timerCheckHotkey = QtCore.QTimer()
-        self.timerCheckHotkey.timeout.connect(self.isHotkeyEvent)
+        self.timerCheckHotkey.timeout.connect(partial(self.hotkeyEvent, self.activeProfile.window))
         self.timerCheckHotkey.start(25)
 
         self.keyHeld = False
@@ -267,32 +240,29 @@ class HotkeyManager:
         self.hotkeyParameters = params
         self.hotkeyHandled = False
 
-    def isHotkeyEvent(self):
-        """Checks whether any hotkey has been pressed. Runs every 25ms."""
-
+    def hotkeyEvent(self, window):
         if self.hotkeyPressed is None:
             return
 
         if not self.hotkeyForPieMenu:  # Adaptation to the system as to not 'hold' standalone hotkeys.
             if self.hotkeyHandled:
                 return
-            self.hotkeyHandled = True
-        self.hotkeyEvent()
 
-    def hotkeyEvent(self):
-        if self.hotkeyForPieMenu:
-            if not self.activeProfile.window.isMenuOpen() and self.hotkeyReleased:
-                self.activeProfile.displayManager.launchPieMenu()
-        else:
+            self.hotkeyHandled = True
             self.runHotkey()
 
+            return
+
+        if not window.menu and self.hotkeyReleased:
+            self.activeProfile.displayManager.launchPieMenu()
+
     def checkKeyHeld(self):
-        if not self.activeProfile.window.isMenuOpen():
+        if not self.activeProfile.window.menu:
             # If right click is pressed immediately after opening pie menus, currentMousePos becomes None,
             # and this causes errors, so better check if pie menu is open or not.
             return
 
-        mouseInCircle = self.activeProfile.window.menu.checkMouseInCircle()
+        mouseInCircle = self.activeProfile.window.menu.menuPresenter.checkMouseInCircle()
 
         self.keyHeld = keyboard.is_pressed(self.hotkeyPressed) or not mouseInCircle
 
@@ -304,7 +274,7 @@ class HotkeyManager:
         if self.keyHeld and keyboard.is_pressed(self.hotkeyPressed):
             pass
         elif not self.keyHeld:
-            if not self.activeProfile.window.isMenuOpen():
+            if not self.activeProfile.window.menu:
                 self.activeProfile.resetAttributes()
         else:
             self.activeProfile.window.releasedHeldKey()
@@ -498,7 +468,7 @@ class ActiveProfile:
                 if not item.get("general", True) or not item.get("enabled", True):
                     continue
 
-                if item["hotkey"] in currentHotkeys:
+                if item["hotkey"] in currentHotkeys:  # Key is overwritten/reserved by specific profile.
                     continue
 
                 if option not in self.profile:
@@ -536,5 +506,6 @@ def detectWindowChange(activeProfile):
 def detectMonitorChange(cursorpos, handle_foreground, mon_manager, window):
     if mon_manager.move_to_active_screen(cursorpos, window) == "no_change":
         return
+
     window.showFullScreen()
     w32gui.SetForegroundWindow(handle_foreground)

@@ -2,10 +2,8 @@
 # here:http://stackoverflow.com/questions/9817531/applying-low-level-keyboard-hooks-with-python-and-setwindowshookexa
 import ctypes
 import win32con
-from ctypes import wintypes
 from collections import namedtuple
-from ctypes import windll, CFUNCTYPE, POINTER, c_int, c_void_p, byref
-from key_codes import mouse_codes
+from ctypes import wintypes, windll, CFUNCTYPE, POINTER, c_int, c_void_p, byref
 import atexit
 
 
@@ -13,6 +11,14 @@ KeyEvents = namedtuple("KeyEvents", (['event_type', 'key_code',
                                       'scan_code', 'alt_pressed',
                                       'time']))
 mouseHandlers = []
+
+MOUSE_CODES = {512: 'mouse move',  # WM_MouseMove
+               513: 'LButton Down',
+               514: 'LButton Up',
+               516: 'RButton Down',
+               517: 'RButton Up',
+               522: 'wheel',
+               0x0215: 'WM_CAPTURECHANGED'}
 
 
 def listener():
@@ -22,9 +28,9 @@ def listener():
         """
         Processes a low level Windows mouse event.
         """
-        event = KeyEvents(mouse_codes[wParam], lParam[0], lParam[1], lParam[2] == 32, lParam[3])
+        event = KeyEvents(MOUSE_CODES[wParam], lParam[0], lParam[1], lParam[2] == 32, lParam[3])
 
-        if mouse_codes.get(wParam):
+        if MOUSE_CODES.get(wParam):
             returnval = None
             for handle in mouseHandlers:
                 # return value from last handler will be used, obviously.

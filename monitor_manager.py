@@ -1,11 +1,14 @@
 from PySide2.QtGui import QCursor, QScreen
+
+
 # from PySide2 import QtCore, QtGui, QtWidgets
 
 # enum _PROCESS_DPI_AWARENESS    
 PROCESS_DPI_UNAWARE = 0
 PROCESS_SYSTEM_DPI_AWARE = 1
 PROCESS_PER_MONITOR_DPI_AWARE = 2
-#  InnI: Get per-monitor DPI scaling factor (https://www.autoitscript.com/forum/topic/189341-get-per-monitor-dpi-scaling-factor/?tab=comments#comment-1359832)
+#  InnI: Get per-monitor DPI scaling factor (
+#  https://www.autoitscript.com/forum/topic/189341-get-per-monitor-dpi-scaling-factor/?tab=comments#comment-1359832)
 DPI_AWARENESS_CONTEXT_UNAWARE = -1
 DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = -2
 DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE = -3
@@ -14,12 +17,8 @@ DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = -4
 TASKBARSIZE = 32
 
 
-
-test = QScreen()
-# test.
-
-class Monitor_Manager:
-    def __init__(self, screens, primary_screen = None) -> None:
+class MonitorManager:
+    def __init__(self, screens, primary_screen=None) -> None:
         if primary_screen:
             self.primary_screen = primary_screen
         else:
@@ -37,7 +36,7 @@ class Monitor_Manager:
         """Active screen is the one which has mouse cursor in it."""
 
         active_screen = None
-        
+
         for screen in self.screens:
             """top_lx is topleft x coordinate
                top_ly is top left y coordinate and so on"""

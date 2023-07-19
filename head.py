@@ -1,5 +1,5 @@
 import core
-from piemenu_backend import Window
+from frontend import Window
 from settings.pie_themes import tray_theme
 from settingsMenu import SettingsManager
 from systemTrayIcon import SystemTrayIcon
@@ -48,12 +48,14 @@ def CreateTrayWidget(app, settingsManager):
 
 
 def CreateMonitorManager():
-    if len(app.screens()) > 1:
-        from monitor_manager import Monitor_Manager
+    if len(app.screens()) == 1:
+        return
+
+    from monitor_manager import MonitorManager
 
 
-        core.IS_MULTI_MONITOR_SETUP = True
-        return Monitor_Manager(app.screens(), app.primaryScreen())
+    core.IS_MULTI_MONITOR_SETUP = True
+    return MonitorManager(app.screens(), app.primaryScreen())
 
 
 def SetHighDPISettings():
@@ -78,21 +80,18 @@ if __name__ == "__main__":
         except OSError as e:
             print(e)
 
-    app = QtWidgets.QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(False)
-
     settingsManager = SettingsManager()
     core.UpdateGlobalVariables(settingsManager)
 
-    CreateTrayWidget(app, settingsManager)
-
     SetHighDPISettings()
+
+    app = QtWidgets.QApplication(sys.argv)
+    app.setQuitOnLastWindowClosed(False)
+
+    CreateTrayWidget(app, settingsManager)
 
     window = Window()
     window.showFullScreen()
-
-    # Qt warning messages handler installing
-    QtCore.qInstallMessageHandler(core.qtMessageHandler)
 
     activeProfile = core.ActiveProfile(settingsManager, window, CreateMonitorManager())
 

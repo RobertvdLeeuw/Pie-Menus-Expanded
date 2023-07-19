@@ -94,7 +94,7 @@ def runCommand(params: list):
     subprocess.run(params, shell=True)
 
 
-def scriptedMenu(params: dict) -> list[MenuOption]:
+def scriptedMenu(params: dict) -> list[MenuOption]:  # TODO: Rename to buildScriptedMenu.
     """
     Upon opening piemenu, runs the script and populates the menu with the given results.
     """
