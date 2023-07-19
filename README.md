@@ -50,10 +50,10 @@ in <a href="https://www.evernote.com/shard/s583/sh/74aa1ffb-5e7b-41d0-3762-3f241
 this notebook</a>. The main features planned, however, are:
 
 * A rework of the settings menu, to be more aesthetic and user-friendly.
-* Menu scripts. These are scripts that can dynamically alter the names and functionality of slices of pie menus.
+* -~~Menu scripts. These are scripts that can dynamically alter the names and functionality of slices of pie menus.
   Continuing with the Chrome example, instead of manually filling in all of your most frequently used websites, you
   could write a custom script that tracks your internet usage and constantly updates the slices to reflect your most
-  frequented websites, as they change over time.
+  frequented websites, as they change over time.~~ This has been implemented as of recent.
 * A major overhaul of the theme settings, allowing for the creation of custom skins, to make every pie menu look exactly
   like how you want them to look.
 * Pie menu groups. These would be pie menus linked to the same hotkey, that can be scrolled through, using either
